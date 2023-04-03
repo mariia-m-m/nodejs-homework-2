@@ -6,19 +6,6 @@ const contactsRouter = require('./routes/api/contacts')
 
 const app = express();//app-це веб-сервер
 
-const contacts = require("./contacts")
-
-
-app.get("/", (reques, response) => {
-  response.send("<h2>Home page</h2>")
-})
-
-app.get("/contacts", (reques, response) => {
-    response.send(contacts)
-})
-
-
-
 const formatsLogger = app.get('env') === 'development' ? 'dev' : 'short'
 
 app.use(logger(formatsLogger))
@@ -32,7 +19,8 @@ app.use((req, res) => {
 })
 
 app.use((err, req, res, next) => {
-  res.status(500).json({ message: err.message })
+  const {status=500, message="Server error" } = err;
+  res.status(status).json({ message,})
 })
 
 
