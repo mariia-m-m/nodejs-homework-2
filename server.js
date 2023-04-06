@@ -3,7 +3,7 @@ const mongoose=require("mongoose")
 const app = require('./app')
 // mWzy8iAxtoljBaMU
 
-const DB_HOST="mongodb+srv://Mariia:mWzy8iAxtoljBaMU@cluster0.r1cp8dg.mongodb.net/contacts_book?retryWrites=true&w=majority"
+const {DB_HOST}=require("./config")
 
 mongoose.connect(DB_HOST)
   .then(()=>app.listen(3000))
