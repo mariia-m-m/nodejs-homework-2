@@ -4,11 +4,10 @@ const router = express.Router();
 
 const ctrl = require("../../controllers/contacts-controllers");
 
-const { validateBody} = require("../../utils");
+const { validateBody,authenticate} = require("../../utils");
 
 const { schemas } = require("../../models/contacts");
 
-const {authenticate}= require("../../utils")
 
 
 router.get('/', authenticate, ctrl.getAllContacts);
