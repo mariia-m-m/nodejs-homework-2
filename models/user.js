@@ -6,7 +6,6 @@ const {handleMongooseError} = require("../utils");
 const userSchema = new Schema({
     password: {
         type: String,
-        minlength:6,
         required: [true, 'Password is required'],
     },
     email: {
@@ -26,7 +25,7 @@ const userSchema = new Schema({
 
 }, { versionKey: false, timestamps: true });
 
-userSchema.post("save", handleMongooseError)
+userSchema.post(`save`, handleMongooseError);
 
 const registrationSchema = Joi.object({
     password: Joi.string().min(6).required(),

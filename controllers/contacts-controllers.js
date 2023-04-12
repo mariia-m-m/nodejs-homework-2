@@ -1,22 +1,18 @@
 
 
-const { HttpError } = require("../helpers/index");
+const { HttpError } = require("../helpers");
 
 const { Contact } =require("../models/contacts")
 
-const {ctrlWrapper}=require("../utils/index")
+const {ctrlWrapper}=require("../utils")
 
 const getAllContacts = async (req, res) => {
     const { _id: owner } = req.user;
     const { page = 1, limit = 10 } = req.query;
         const skip = (page - 1) * limit;
-    try {
+    
         const result = await Contact.find({owner},"-createdAt -updatedAt",{skip, limit}).populate("owner");
         res.json(result)
-    }
-    catch (error) {
-        res.status(500).json({ message: error.message })
-    }
 };
 
 const getContactByID = async (req, res) => {
