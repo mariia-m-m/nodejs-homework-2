@@ -1,5 +1,7 @@
 const bcryptjs = require("bcryptjs");
 const jwt = require("jsonwebtoken");
+const path = require("path");
+const fs=require("fs/promises")
 
 const { ctrlWrapper } = require("../utils");
 
@@ -8,8 +10,9 @@ const { User } = require("../models/user");
 const { HttpError } = require("../helpers");
 
 const { SECRET_KEY } = process.env;
+const gravatar = require("gravatar");
 
-
+const avatarDir = path.join(__dirname, "../", "public", 'avatars')
 
 const registration = async (req, res) => {
     const { email,password } = req.body;
@@ -18,9 +21,10 @@ const registration = async (req, res) => {
         throw HttpError(409,`Email ${email} in use`)
     }
 
-    const hashPassword = await bcryptjs.hash(password,10);
+    const hashPassword = await bcryptjs.hash(password, 10);
+    const avatarURL = gravatar.url(email);
 
-    const newUser = await User.create({ ...req.body,password:hashPassword });
+    const newUser = await User.create({ ...req.body,password:hashPassword, avatarURL:avatarURL });
     res.status(201).json({
         email: newUser.email,
         subscription: newUser.subscription,
@@ -66,11 +70,24 @@ const logOut = async (req, res) => {
     })
 }
     
-
+const updateAvatar = async (req, res) => {
+    const { _id } = req.user;
+    const { path: tempUpload, originalName } = req.file;
+    const filename = `${_id}_${originalName}`
+    const resultUpload = path.join(avatarDir, filename);
+    await fs.rename(tempUpload, resultUpload);
+    const avatarURL = path.join("avatars", filename);
+    await User.findByIdAndUpdate(_id, { avatarURL });
+    
+    res.json({
+        avatarURL,
+    })
+}
 
 module.exports = {
     registration: ctrlWrapper(registration),
     login: ctrlWrapper(login),
     getCurrent: ctrlWrapper(getCurrent),
-    logOut:ctrlWrapper(logOut)
+    logOut: ctrlWrapper(logOut),
+    updateAvatar:ctrlWrapper(updateAvatar)
 }
